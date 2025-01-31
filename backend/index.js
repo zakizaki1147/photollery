@@ -27,7 +27,7 @@ app.post('/api/users', (req, res) => {
     if (!namaLengkap || !alamat || !username || !email || !password) {
         return res.status(400).json({ message: 'Please fill all the columns!' });
     }
-
+// miaw
     const sql = `INSERT INTO user (NamaLengkap, Alamat, Username, Email, Password) VALUES (?, ?, ?, ?, ?)`;
     const values = [namaLengkap, alamat, username, email, password];
 
