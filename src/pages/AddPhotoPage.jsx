@@ -11,35 +11,36 @@ export const AddPhotoPage = () => {
       <div className='w-full fixed top-0 z-10'>
         <NavigationBar />
       </div>
-      <div className='w-full h-screen flex justify-center items-center'>
+      <div className='w-full h-screen flex justify-center items-center bg-gradient-to-tr from-secondary to-primary'>
         <div className='h-fit flex justify-center items-center gap-5'>
           <div className='w-80 h-fit flex flex-col gap-4'>
-            <div className='h-80 rounded-xl bg-primary border-4 border-secondary border-dashed flex flex-col justify-center items-center gap-4'>
-              <div className='text-primary bg-secondary rounded-lg p-1 mt-10 flex justify-center items-center'>
+            <div className='h-80 rounded-xl bg-white hover:bg-primary border-4 border-primary border-dashed flex flex-col justify-center items-center gap-4'>
+              <input type="file" />
+              <div className='text-secondary bg-primary rounded-lg p-1 mt-10 flex justify-center items-center'>
                 <ImageUp size={40} />
               </div>
               <p className='text-center text-sm leading-tight select-none'>Choose your image <br /> or upload it here.</p>
             </div>
-            <div className='rounded-xl bg-secondary p-3 text-white'>
+            <div className='rounded-xl bg-white p-3 text-secondary'>
               <p>Notes:</p>
               <ul className='text-sm'>
                 <li className='flex items-center'>
-                  <Circle fill='white' size={6} />
+                  <Circle size={6} />
                   <p className='ml-2'>Supported formats: .jpg, .jpeg, .png</p>
                 </li>
                 <li className='flex items-center'>
-                  <Circle fill='white' size={6} />
+                  <Circle size={6} />
                   <p className='ml-2'>Max file size: 20mb</p>
                 </li>
               </ul>
             </div>
           </div>
-          <div className='w-[30rem] h-[444px] flex flex-col border-2 border-primary rounded-xl p-5'>
+          <div className='w-[30rem] h-[444px] flex flex-col rounded-xl p-5 bg-white'>
             <div className='flex flex-col justify-center gap-3 h-[320px]'>
-              <div>
+              <div className='w-full'>
                 <label 
                   htmlFor="judulFoto"
-                  className='font-medium text-sm text-secondary'
+                  className='font-medium text-sm text-secondary w-full'
                 >Photo Title</label>
                 <TextForm
                   placeholder='Photo Title'

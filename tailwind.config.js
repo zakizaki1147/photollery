@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        dmmono: ['DM Mono']
+        dmmono: ['DM Mono', 'mono']
       },
       colors: {
         primary: "rgba(var(--primary))",
