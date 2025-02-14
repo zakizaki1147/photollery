@@ -14,18 +14,36 @@ export const RegisterPage = () => {
     password: '',
   })
 
+  const [errors, setErrors] = useState({})
+
   const handleChange = (e) => {
     setUserData({ 
       ...userData,
       [e.target.name]: e.target.value,
     })
+    setErrors({
+      ...errors,
+      [e.target.name]: ''
+    })
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let newErrors = {};
+    Object.keys(userData).forEach((key) => {
+      if (!userData[key]) {
+        newErrors[key] = 'Please fill this field!'
+      }
+    })
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
     
     try {
-      const response = await axios.post('http://localhost:5000/api/users', userData)
+      const response = await axios.post('http://localhost:5000/api/register', userData)
       console.log('User successfully registered!', response.data)
       setUserData({
         namaLengkap: '',
@@ -34,6 +52,7 @@ export const RegisterPage = () => {
         email: '',
         password: '',
       })
+      setErrors({})
       alert('User successfully registered!')
     } catch (error) {
       console.error('Error encountered:', error.response?.data || error.message);
@@ -57,64 +76,49 @@ export const RegisterPage = () => {
             <p className='text-3xl font-semibold text-secondary'>Register</p>
             <div className='w-full flex flex-col gap-3'>
               <div className='w-full'>
-                <label 
-                  htmlFor="namaLengkap"
-                  className='font-medium text-sm text-secondary'
-                >Full Name</label>
                 <TextForm
                   placeholder='Full Name'
                   id='namaLengkap'
                   value={userData.namaLengkap}
                   onChange={handleChange}
-                />
+                  error={errors.namaLengkap}
+                >Full Name</TextForm>
               </div>
               <div className='w-full'>
-                <label 
-                  htmlFor="alamat"
-                  className='font-medium text-sm text-secondary'
-                >Address</label>
                 <TextForm
                   placeholder='Address'
                   id='alamat'
                   value={userData.alamat}
                   onChange={handleChange}
-                />
+                  error={errors.alamat}
+                >Address</TextForm>
               </div>
               <div className='w-full'>
-                <label 
-                  htmlFor="username"
-                  className='font-medium text-sm text-secondary'
-                >Username</label>
                 <TextForm
                   placeholder='Username'
                   id='username'
                   value={userData.username}
                   onChange={handleChange}
-                />
+                  error={errors.username}
+                >Username</TextForm>
               </div>
               <div className='w-full'>
-                <label 
-                  htmlFor="email"
-                  className='font-medium text-sm text-secondary'
-                >Email</label>
                 <TextForm
                   placeholder='Email'
                   id='email'
                   value={userData.email}
                   onChange={handleChange}
-                />
+                  error={errors.email}
+                >Email</TextForm>
               </div>
               <div className='w-full'>
-                <label
-                  htmlFor="password"
-                  className='font-medium text-sm text-secondary'
-                >Password</label>
                 <PasswordForm
                   placeholder='Password'
                   id='password'
                   value={userData.password}
                   onChange={handleChange}
-                />
+                  error={errors.password}
+                >Password</PasswordForm>
               </div>
             </div>
             <div className='w-full flex justify-center items-center gap-24'>
