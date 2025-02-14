@@ -1,67 +1,87 @@
 import React from 'react';
 import { Heart, Bookmark, ChevronRight } from 'lucide-react';
 
-const photos = [
-  { id: 1, src: '/test-photos/unsplash1.jpg', alt: 'Photo 1' },
-  { id: 2, src: '/test-photos/unsplash2.jpg', alt: 'Photo 2' },
-  { id: 3, src: '/test-photos/unsplash3.jpg', alt: 'Photo 3' },
-  { id: 4, src: '/test-photos/unsplash4.jpg', alt: 'Photo 4' },
-  { id: 5, src: '/test-photos/unsplash5.jpg', alt: 'Photo 5' },
-  { id: 6, src: '/test-photos/unsplash6.jpg', alt: 'Photo 6' },
-  { id: 7, src: '/test-photos/unsplash3.jpg', alt: 'Photo 3' },
-  { id: 8, src: '/test-photos/unsplash2.jpg', alt: 'Photo 2' },
-  { id: 9, src: '/test-photos/unsplash1.jpg', alt: 'Photo 1' },
-  { id: 10, src: '/test-photos/unsplash5.jpg', alt: 'Photo 5' },
-  { id: 11, src: '/test-photos/unsplash6.jpg', alt: 'Photo 6' },
-  { id: 12, src: '/test-photos/unsplash4.jpg', alt: 'Photo 4' },
-  { id: 13, src: '/test-photos/unsplash1.jpg', alt: 'Photo 1' },
-  { id: 14, src: '/test-photos/unsplash2.jpg', alt: 'Photo 2' },
-  { id: 15, src: '/test-photos/unsplash3.jpg', alt: 'Photo 3' },
-  { id: 16, src: '/test-photos/unsplash4.jpg', alt: 'Photo 4' },
-  { id: 17, src: '/test-photos/unsplash5.jpg', alt: 'Photo 5' },
-  { id: 18, src: '/test-photos/unsplash6.jpg', alt: 'Photo 6' },
-  { id: 19, src: '/test-photos/unsplash3.jpg', alt: 'Photo 3' },
-  { id: 20, src: '/test-photos/unsplash2.jpg', alt: 'Photo 2' },
-  { id: 21, src: '/test-photos/unsplash1.jpg', alt: 'Photo 1' },
-  { id: 22, src: '/test-photos/unsplash5.jpg', alt: 'Photo 5' },
-  { id: 23, src: '/test-photos/unsplash6.jpg', alt: 'Photo 6' },
-  { id: 24, src: '/test-photos/unsplash4.jpg', alt: 'Photo 4' },
-];
-
-export const Images = ({ onImageLoad, spans }) => {
+const Image = ({ onImageLoad, spans, photos }) => {
   return (
     <>
       {photos.map((photo) => (
         <div
-          key={photo.id}
-          className="relative group rounded-xl overflow-hidden bg-gray-100"
-          style={{ gridRow: `span ${spans[photo.id] || 2}` }}
+          key={photo.FotoID}
+          className="relative group rounded-xl overflow-hidden bg-gray-100 border-2 border-transparent hover:border-primary"
+          style={{ gridRow: `span ${spans[photo.FotoID] || 2}` }}
         >
           <img
-            src={photo.src}
-            alt={photo.alt}
-            onLoad={(e) => onImageLoad(e, photo.id)}
+            src={`http://localhost:5000${photo.LokasiFile}`}
+            alt={photo.JudulFoto}
+            onLoad={(e) => onImageLoad(e, photo.FotoID)}
             className="w-full h-full object-cover"
             loading="lazy"
           />
           <div className="absolute inset-0 bg-black opacity-0 flex items-end group-hover:opacity-30 transition-opacity duration-300 cursor-pointer"></div>
           <div className='absolute bottom-0 w-full h-16 flex justify-between items-center px-5 opacity-0 group-hover:opacity-100 duration-300 cursor-pointer'>
             <div className='flex gap-4'>
-              <div className='p-2 bg-primary/50 hover:bg-primary rounded-full transition'>
-                <Heart size={20} color='red' fill='red' />
-                {/* <Heart size={20} /> */}
+              <div className='p-2.5 bg-black/50 hover:bg-black/80 text-primary rounded-full transition'>
+                <Heart size={20} />
+                {/* <Heart size={20} fill='currentColor' /> */}
               </div>
-              <div className='p-2 bg-primary/50 hover:bg-primary rounded-full transition'>
-                <Bookmark size={20} color='orange' fill='orange' />
-                {/* <Bookmark size={20} /> */}
+              <div className='p-2.5 bg-black/50 hover:bg-black/80 text-primary rounded-full transition'>
+                <Bookmark size={20} />
+                {/* <Bookmark size={20} fill='currentColor' /> */}
               </div>
             </div>
-            <div className='p-2 bg-primary/50 hover:bg-primary rounded-full transition'>
-              <ChevronRight size={20} />
+            <div className='p-1.5 bg-black/50 hover:bg-black/80 text-primary rounded-full transition'>
+              <ChevronRight size={27} />
             </div>
           </div>
         </div>
       ))}
     </>
+  )
+}
+
+const AlbumCollage = ({ album }) => {
+  const photos = album.photos || [];
+
+  return (
+    <div className="w-full h-60 relative group rounded-xl overflow-hidden bg-gradient-to-tr from-secondary to-primary flex gap-0.5 border-2 border-primary cursor-pointer">
+      <div className="w-2/3 h-full">
+        {photos[0] ? (
+          <img
+            src={`http://localhost:5000${photos[0].LokasiFile}`}
+            alt={photos[0].JudulFoto || "No Image"}
+            className="w-full h-full object-center object-cover"
+          />
+        ) : null}
+      </div>
+      <div className="w-1/3 h-full flex flex-col gap-0.5">
+        <div className="w-full h-1/2 bg-white">
+          {photos[1] ? (
+            <img
+              src={`http://localhost:5000${photos[1].LokasiFile}`}
+              alt={photos[1].JudulFoto || "No Image"}
+              className="w-full h-full object-center object-cover"
+            />
+          ) : null}
+        </div>
+        <div className="w-full h-1/2 bg-white">
+          {photos[2] ? (
+            <img
+              src={`http://localhost:5000${photos[2].LokasiFile}`}
+              alt={photos[2].JudulFoto || "No Image"}
+              className="w-full h-full object-center object-cover"
+            />
+          ) : null}
+        </div>
+      </div>
+      <div className="absolute inset-0 bg-black opacity-0 flex items-end group-hover:opacity-30 transition-opacity duration-300 cursor-pointer"></div>
+      <div className="absolute bottom-0 w-full h-16 flex justify-end items-center px-5 opacity-0 group-hover:opacity-100 duration-300 cursor-pointer">
+        <div className="p-1.5 bg-black/50 hover:bg-black/80 text-primary rounded-full transition">
+          <ChevronRight size={27} />
+        </div>
+      </div>
+    </div>
   );
 };
+
+
+export { Image, AlbumCollage }
