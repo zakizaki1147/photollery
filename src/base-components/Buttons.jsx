@@ -6,7 +6,7 @@ const ButtonPrimary = ({ children, onClick, type }) => {
     <>
       <button
         type={type}
-        className='bg-primary border-primary border-2 px-4 py-1.5 text-sm text-white font-medium text-primary rounded-lg flex justify-center items-center gap-1 hover:bg-secondary hover:border-secondary transition'
+        className='bg-primary border-primary border-2 px-4 py-1.5 w-full text-sm text-white font-medium text-primary rounded-lg flex justify-center items-center gap-1 hover:bg-secondary hover:border-secondary transition'
         onClick={onClick}
       >
         {children}
@@ -20,7 +20,7 @@ const ButtonSecondary = ({ children, onClick, type }) => {
     <>
       <button
         type={type}
-        className='bg-secondary border-secondary border-2 px-4 py-1.5 text-sm text-white font-medium text-primary rounded-lg flex justify-center items-center gap-1 hover:bg-primary hover:border-primary transition'
+        className='bg-secondary border-secondary border-2 px-4 py-1.5 w-full text-sm text-white font-medium text-primary rounded-lg flex justify-center items-center gap-1 hover:bg-primary hover:border-primary transition'
         onClick={onClick}
       >
         {children}
@@ -34,7 +34,7 @@ const ButtonPrimaryOutline = ({ children, onClick, type }) => {
     <>
       <button
         type={type}
-        className='bg-primary/30 border-primary border-2 px-4 py-1.5 text-sm text-secondary font-medium rounded-lg flex justify-center items-center gap-1 hover:bg-primary hover:text-white transition'
+        className='bg-primary/30 border-primary border-2 px-4 py-1.5 w-full text-sm text-secondary font-medium rounded-lg flex justify-center items-center gap-1 hover:bg-primary hover:text-white transition'
         onClick={onClick}
       >
         {children}
@@ -48,7 +48,7 @@ const ButtonSecondaryOutline = ({ children, onClick, type }) => {
     <>
       <button
         type={type}
-        className='bg-secondary/30 border-secondary border-2 px-4 py-1.5 text-sm text-secondary font-medium rounded-lg flex justify-center gap-2 items-center hover:bg-secondary hover:text-white transition'
+        className='bg-secondary/30 border-secondary border-2 px-4 py-1.5 w-full text-sm text-secondary font-medium rounded-lg flex justify-center gap-2 items-center hover:bg-secondary hover:text-white transition'
         onClick={onClick}
       >
         {children}

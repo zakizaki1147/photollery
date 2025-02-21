@@ -134,11 +134,15 @@ export const AddPhotoPage = () => {
                 >Photo Album</Dropdown>
               </div>
             </div>
-            <div className='flex flex-1 justify-between items-end'>
-              <Link to='/'>
-                <ButtonSecondaryOutline>Cancel</ButtonSecondaryOutline>
-              </Link>
-              <ButtonSecondary type="submit">Upload</ButtonSecondary>
+            <div className='flex flex-1 justify-between items-end gap-5'>
+              <div className='w-1/2'>
+                <Link to='/'>
+                  <ButtonSecondaryOutline>Cancel</ButtonSecondaryOutline>
+                </Link>
+              </div>
+              <div className='w-1/2'>
+                <ButtonSecondary type="submit">Upload</ButtonSecondary>
+              </div>
             </div>
           </div>
         </form>

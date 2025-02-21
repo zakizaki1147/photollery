@@ -49,7 +49,6 @@ export const LoginPage = () => {
 
       if (response.ok) {
         localStorage.setItem('token', result.token)
-        localStorage.setItem('user', JSON.stringify(result.user))
         navigate('/')
       } else {
         setMessage(result.message)

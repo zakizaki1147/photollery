@@ -43,7 +43,7 @@ export const AlbumsPage = () => {
           <AddAlbumPopup open={openAddAlbumPopup} onClose={() => setOpenAddAlbumPopup(false)} />
         </div>
       ) : (
-        <div className='w-full mt-60 flex flex-col justify-center items-center gap-5'>
+        <div className='w-full h-screen flex flex-col justify-center items-center gap-5'>
           <p>You don't have any album photos yet.</p>
           <ButtonNewAlbum onClick={toggleAddAlbumPopup} />
           <AddAlbumPopup open={openAddAlbumPopup} onClose={() => setOpenAddAlbumPopup(false)} />
