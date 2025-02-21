@@ -5,20 +5,17 @@ import { AlbumsPage } from "./pages/AlbumsPage"
 import { FavoritesPage } from "./pages/FavoritesPage"
 import { LoginPage } from "./pages/LoginPage"
 import { RegisterPage } from "./pages/RegisterPage"
-import { AddAlbumPage } from "./pages/AddAlbumPage"
 
 function App() {
   return (
     <>
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/" element={<MainPage />} />
         <Route path="/addphoto" element={<AddPhotoPage />} />
         <Route path="/albums" element={<AlbumsPage />} />
-        <Route path="/addalbum" element={<AddAlbumPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </>
   )

@@ -121,11 +121,15 @@ export const RegisterPage = () => {
                 >Password</PasswordForm>
               </div>
             </div>
-            <div className='w-full flex justify-center items-center gap-24'>
-              <Link to='/login'>
-                <ButtonSecondaryOutline>Back to Log In</ButtonSecondaryOutline>
-              </Link>
-              <ButtonSecondary type='submit'>Sign Up</ButtonSecondary>
+            <div className='w-full flex justify-center items-center gap-5'>
+              <div className='w-1/2'>
+                <Link to='/login'>
+                  <ButtonSecondaryOutline>Back to Log In</ButtonSecondaryOutline>
+                </Link>
+              </div>
+              <div className='w-1/2'>
+                <ButtonSecondary type='submit'>Sign Up</ButtonSecondary>
+              </div>
             </div>
           </form>
         </div>

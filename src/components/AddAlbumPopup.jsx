@@ -94,9 +94,13 @@ export const AddAlbumPopup = ({ open, onClose }) => {
                   >Album Description</TextArea>
                 </div>
               </div>
-              <div className='flex justify-between items-center mt-10'>
-                <ButtonSecondaryOutline onClick={handleClose} type='button'>Cancel</ButtonSecondaryOutline>
-                <ButtonSecondary type='submit'>Create</ButtonSecondary>
+              <div className='flex justify-between items-center gap-5 mt-10'>
+                <div className='w-1/2'>
+                  <ButtonSecondaryOutline onClick={handleClose} type='button'>Cancel</ButtonSecondaryOutline>
+                </div>
+                <div className='w-1/2'>
+                  <ButtonSecondary type='submit'>Create</ButtonSecondary>
+                </div>
               </div>
             </form>
           </div>

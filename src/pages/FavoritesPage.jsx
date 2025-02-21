@@ -10,7 +10,7 @@ export const FavoritesPage = () => {
       <div className='w-full fixed top-0 z-10'>
         <NavigationBar />
       </div>
-      <div className='w-full mt-72 flex flex-col justify-center items-center gap-5'>
+      <div className='w-full h-screen flex flex-col justify-center items-center gap-5'>
         <p>You don't have any favorite photos yet.</p>
         <Frown size={50} strokeWidth={2} />
         <div className='flex justify-center items-center gap-2'>

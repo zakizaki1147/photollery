@@ -5,14 +5,16 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
-const verifyToken = require('./middleware/auth');
-require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const verifyToken = require('./middleware/auth');
+const protectedRoutes = require('./routes/protectedRoutes');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/api/protected", protectedRoutes);
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -89,22 +91,21 @@ app.post('/api/login', (req, res) => {
         return res.status(400).json({ message: 'Please fill all fields!' })
     }
 
-    const sql = 'SELECT * FROM user WHERE Username = ?';
-    db.query(sql, [username], (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Server error!' });
-        }
-        if (results.length === 0) {
-            return res.status(401).json({ message: 'Invalid username or password!' });
-        }
-
-        const user = results[0];
-        bcrypt.compare(password, user.Password, (err, isMatch) => {
+    try {
+        const sql = 'SELECT * FROM user WHERE Username = ?';
+        db.query(sql, [username], async (err, results) => {
             if (err) {
-                return res.status(500).json({ message: 'Error checking password!' });
+                return res.status(500).json({ message: 'Server error!' });
             }
-            if (!isMatch) {
+            if (results.length === 0) {
                 return res.status(401).json({ message: 'Invalid username or password!' });
+            }
+
+            const user = results[0];
+            const isMatch = await bcrypt.compare(password, user.Password)
+
+            if (!isMatch) {
+                return res.status(401).json({ message: 'Invalid username or password!' })
             }
 
             const token = jwt.sign(
@@ -115,15 +116,13 @@ app.post('/api/login', (req, res) => {
 
             return res.status(200).json({ 
                 message: 'Login successful',
-                token: token,
-                user: {
-                    id: user.UserID,
-                    username: user.Username,
-                    email: user.Email,
-                },
+                token: token
             });
         });
-    });
+    } catch (error) {
+        console.error("Login error:", error);
+        return res.status(500).json({ message: 'Server error!' });
+    }
 });
 
 app.post("/api/upload_photo", verifyToken, upload.single("foto"), (req, res) => {
@@ -233,6 +232,114 @@ app.get("/api/photos", (req, res) => {
         }
         res.json(result);
     })
+});
+
+app.get("/api/photo/:fotoID", (req, res) => {
+    const { fotoID } = req.params;
+    const sql = `
+        SELECT f.FotoID, f.JudulFoto, f.DeskripsiFoto, f.TanggalUnggah, f.LokasiFile, u.UserID, u.Username
+        FROM foto f JOIN user u ON f.UserID = u.UserID WHERE f.FotoID = ?
+    `;
+
+    db.query(sql, [fotoID], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: 'Server error!' });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'Photo not found!' });
+        }
+
+        const photo = results[0];
+
+        res.json({
+            fotoID: photo.FotoID,
+            judulFoto: photo.JudulFoto,
+            deskripsiFoto: photo.DeskripsiFoto,
+            tanggalUnggah: photo.TanggalUnggah,
+            lokasiFile: photo.LokasiFile,
+            user: {
+                id: photo.UserID,
+                username: photo.Username
+            }
+        })
+    })
+});
+
+app.post("/api/photo/:fotoID/like", verifyToken, async (req, res) => {
+    try {
+        const { fotoID } = req.params;
+        const userID = req.user.id;
+        const [checkLike] = await db.promise().query("SELECT * FROM likefoto WHERE FotoID = ? AND UserID = ?", [fotoID, userID]);
+
+        if (checkLike.length > 0) {
+            await db.promise().query("DELETE FROM likefoto WHERE FotoID = ? AND UserID = ?", [fotoID, userID]);
+            return res.json({ success: true, message: "Photo unliked!", liked: false });
+        } else {
+            await db.promise().query("INSERT INTO likefoto (FotoID, UserID, TanggalLike) VALUES (?, ?, NOW())", [fotoID, userID]);
+            return res.json({ success: true, message: "Photo liked", liked: true });
+        }
+    } catch (error) {
+        console.error("Error liking photo:", error);
+        res.status(500).json({ success: false, message: "Server error!" });
+    }
+});
+
+app.get("/api/photo/:fotoID/likes", verifyToken, async (req, res) => {
+    try {
+        const { fotoID } = req.params;
+        const userID = req.user.id;
+        const [result] = await db.promise().query("SELECT COUNT(*) AS likeCount FROM likefoto WHERE FotoID = ?", [fotoID]);
+        const [userLike] = await db.promise().query("SELECT * FROM likefoto WHERE FotoID = ? AND UserID = ?", [fotoID, userID]);
+        res.json({
+            likeCount: result[0].likeCount,
+            liked: userLike.length > 0,
+        });
+    } catch (error) {
+        console.error("Error fetching likes:", error);
+        res.status(500).json({ success: false, message: "Server error!" });
+    }
+});
+
+app.post("/api/photo/:fotoID/comment", verifyToken, async (req, res) => {
+    try {
+        const { fotoID } = req.params;
+        const { isiKomentar } = req.body;
+        const userID = req.user.id;
+
+        if (!isiKomentar.trim()) {
+            return res.status(400).json({ success: false, message: "Komentar tidak boleh kosong!" });
+        }
+
+        await db.promise().query("INSERT INTO komentarfoto (FotoID, UserID, IsiKomentar, TanggalKomentar) VALUES (?, ?, ?, NOW())", [fotoID, userID, isiKomentar]);
+
+        const [newComment] = await db.promise().query(
+            `SELECT k.KomentarID, k.IsiKomentar, k.TanggalKomentar, u.Username
+            FROM komentarfoto k JOIN user u ON k.UserID = u.UserID
+            WHERE k.FotoID = ? ORDER BY k.TanggalKomentar DESC LIMIT 1`, [fotoID]
+        );
+
+        res.json({ success: true, message: "Komentar berhasil ditambahkan!", comment: newComment[0] });
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        res.status(500).json({ success: false, message: "Server error!" });
+    }
+});
+
+app.get("/api/photo/:fotoID/comments", async (req, res) => {
+    try {
+        const { fotoID } = req.params;
+        
+        const [comments] = await db.promise().query(
+            `SELECT k.KomentarID, k.IsiKomentar, k.TanggalKomentar, u.Username 
+            FROM komentarfoto k JOIN user u ON k.UserID = u.UserID 
+            WHERE k.FotoID = ? ORDER BY k.TanggalKomentar ASC`, [fotoID]
+        );
+
+        res.json({ success: true, comments });
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        res.status(500).json({ success: false, message: "Server error!" });
+    }
 })
 
 app.listen(5000, () => {

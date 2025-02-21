@@ -1,16 +1,30 @@
-import React from 'react'
-import { ButtonPrimary, ButtonSecondary, ButtonPrimaryOutline, ButtonSecondaryOutline } from '../base-components/Buttons'
+import React, { useEffect, useState } from 'react'
+import { ButtonSecondary } from '../base-components/Buttons'
 import { Heart, Bookmark, Plus } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PhotolleryText from '../assets/photolleryText.png'
+import { LogoutPopup } from './LogoutPopup'
+import { jwtDecode } from 'jwt-decode'
 
 export const NavigationBar = () => {
-  const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('user'))
+  const [openLogoutPopup, setOpenLogoutPopup] = useState(false)
+  const [user, setUser] = useState(null)
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    navigate('/login')
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      try {
+        const decoded = jwtDecode(token)
+        setUser(decoded)
+      } catch (error) {
+        console.error("Invalid token:", error)
+        localStorage.removeItem('token')
+      }
+    }
+  }, [])
+
+  const toggleLogoutPopup = () => {
+    setOpenLogoutPopup((prev) => !prev)
   }
 
   return (
@@ -34,9 +48,8 @@ export const NavigationBar = () => {
                 <ButtonSecondary><Bookmark size={16} />Albums</ButtonSecondary>
               </Link>
               <p className='font-sans text-white select-none'>I</p>
-              <Link to='/login'>
-                <ButtonSecondary onClick={handleLogout}>Log Out</ButtonSecondary>
-              </Link>
+              <ButtonSecondary onClick={toggleLogoutPopup}>Log Out</ButtonSecondary>
+              <LogoutPopup open={openLogoutPopup} onClose={() => setOpenLogoutPopup(false)} />
             </div>
           ) : (
             <div className='flex justify-center items-center gap-2'>
