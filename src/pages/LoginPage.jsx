@@ -51,6 +51,7 @@ export const LoginPage = () => {
         localStorage.setItem('token', result.token)
         navigate('/')
       } else {
+        alert("Invalid username or password!")
         setMessage(result.message)
       }
     } catch (err) {

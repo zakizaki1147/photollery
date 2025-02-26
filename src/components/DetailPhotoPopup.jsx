@@ -3,6 +3,7 @@ import ReactDom from 'react-dom'
 import { useBodyOverflow } from '../custom-hooks/useBodyOverflow'
 import { Bookmark, Heart, MessageCircle, SendHorizonal } from 'lucide-react'
 import { CommentForm } from '../base-components/InputForms'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 
 export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
@@ -32,7 +33,7 @@ export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
 
   const fetchPhotoDetail = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/photo/${id}`)
+      const response = await axios.get(`http://localhost:5000/api/photos/${id}`)
       setPhotoDetail(response.data)
     } catch (error) {
       console.error('Error fetching photo data:', error)
@@ -41,10 +42,14 @@ export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
 
   const fetchLikes = async (id) => {
     try {
+      const noTokenResponse = await axios.get(`http://localhost:5000/api/photos/${id}/likes-no-token`)
+      setLikesCount(noTokenResponse.data.likeCount)
       const token = localStorage.getItem("token")
-      const response = await axios.get(`http://localhost:5000/api/photo/${id}/likes`, { headers: { Authorization: `Bearer ${token}` } })
-      setLikesCount(response.data.likeCount)
-      setIsLiked(response.data.liked)
+
+      if (token) {
+        const tokenResponse = await axios.get(`http://localhost:5000/api/photos/${id}/likes-token`,{ headers: { Authorization: `Bearer ${token}` } })
+        setIsLiked(tokenResponse.data.liked)
+      }
     } catch (error) {
       console.error("Error fetching likes:", error)
     }
@@ -52,7 +57,7 @@ export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
 
   const fetchComments = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/photo/${id}/comments`)
+      const response = await axios.get(`http://localhost:5000/api/photos/${id}/comments`)
       setComments(response.data.comments || [])
     } catch (error) {
       console.error('Error fetching comments:', error)
@@ -65,7 +70,7 @@ export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await axios.post(`http://localhost:5000/api/photo/${photoDetail.fotoID}/like`, {}, { headers: { Authorization: `Bearer ${token}` } })
+      const response = await axios.post(`http://localhost:5000/api/photos/${photoDetail.fotoID}/like`, {}, { headers: { Authorization: `Bearer ${token}` } })
 
       setIsLiked(response.data.liked)
       setLikesCount((prev) => (response.data.liked ? prev + 1 : prev - 1))
@@ -81,7 +86,7 @@ export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `http://localhost:5000/api/photo/${fotoID}/comment`,
+        `http://localhost:5000/api/photos/${fotoID}/comment`,
         { isiKomentar: newComment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -144,11 +149,11 @@ export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
                   <div className='w-full p-4 flex flex-col gap-3 border-b'>
                     <div className='flex justify-between'>
                       <div className='flex gap-4'>
-                        <button className={`group ${isLiked ? 'text-primary fill-primary' : ''}`} onClick={handleLikeClick}>
-                          <Heart size={28} className={`transition ${isLiked ? 'fill-primary text-primary' : 'group-hover:fill-primary group-hover:text-primary'}`} />
+                        <button onClick={localStorage.getItem("token") && handleLikeClick}>
+                          <Heart size={28} className={`transition ${isLiked && 'fill-primary text-primary'} ${localStorage.getItem("token") ? 'hover:fill-primary hover:text-primary' : 'text-gray-400 fill-gray-400 cursor-not-allowed'}`} />
                         </button>
-                        <label htmlFor="isiKomentar" className='cursor-pointer group'>
-                          <MessageCircle size={28} className='group-hover:fill-primary group-hover:text-primary transition' />
+                        <label htmlFor="isiKomentar">
+                          <MessageCircle size={28} className={`${localStorage.getItem("token") ? 'hover:fill-primary hover:text-primary cursor-pointer' : 'text-gray-400 fill-gray-400 cursor-not-allowed'} transition`} />
                         </label>
                       </div>
                       <Bookmark size={28} />
@@ -159,14 +164,23 @@ export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
                       <p>{new Date(photoDetail.tanggalUnggah).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <form onSubmit={handleCommentSubmit}>
-                    <CommentForm
-                      placeholder='Post your comment here...'
-                      id='isiKomentar'
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                    />
-                  </form>
+                  {!localStorage.getItem("token") ? (
+                    <div className='w-full h-14 flex justify-center items-center'>
+                      <p className=''>
+                        <Link to='/login' className='mr-2 font-bold text-secondary hover:underline transition'>Log In</Link>
+                        to like or comment.
+                      </p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleCommentSubmit}>
+                      <CommentForm
+                        placeholder='Post your comment here...'
+                        id='isiKomentar'
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                      />
+                    </form>
+                  )}
                 </div>
               </>
             )}

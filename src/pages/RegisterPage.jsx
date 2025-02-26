@@ -33,32 +33,38 @@ export const RegisterPage = () => {
     let newErrors = {};
     Object.keys(userData).forEach((key) => {
       if (!userData[key]) {
-        newErrors[key] = 'Please fill this field!'
+          newErrors[key] = 'Please fill this field!';
       }
-    })
+    });
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
+      setErrors(newErrors);
+      return;
     }
-    
+
     try {
-      const response = await axios.post('http://localhost:5000/api/register', userData)
-      console.log('User successfully registered!', response.data)
+      const response = await axios.post('http://localhost:5000/api/register', userData);
+      console.log('User successfully registered!', response.data);
       setUserData({
-        namaLengkap: '',
-        alamat: '',
-        username: '',
-        email: '',
-        password: '',
-      })
-      setErrors({})
-      alert('User successfully registered!')
+          namaLengkap: '',
+          alamat: '',
+          username: '',
+          email: '',
+          password: '',
+      });
+      setErrors({});
+      alert('User successfully registered!');
     } catch (error) {
       console.error('Error encountered:', error.response?.data || error.message);
-      alert('Failed to register user.')
+
+      if (error.response && error.response.status === 400 && error.response.data.message === 'Email already registered!') {
+        alert('Email is already registered. Please use a different email.');
+      } else {
+        alert('Failed to register user.');
+      }
     }
-  }
+  };
+
   
   return (
     <>
@@ -122,11 +128,9 @@ export const RegisterPage = () => {
               </div>
             </div>
             <div className='w-full flex justify-center items-center gap-5'>
-              <div className='w-1/2'>
-                <Link to='/login'>
-                  <ButtonSecondaryOutline>Back to Log In</ButtonSecondaryOutline>
-                </Link>
-              </div>
+              <Link to='/login' className='w-1/2'>
+                <ButtonSecondaryOutline>Back to Log In</ButtonSecondaryOutline>
+              </Link>
               <div className='w-1/2'>
                 <ButtonSecondary type='submit'>Sign Up</ButtonSecondary>
               </div>

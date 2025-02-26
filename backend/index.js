@@ -65,18 +65,30 @@ app.post('/api/register', async (req, res) => {
     }
 
     try {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        const sql = `INSERT INTO user (NamaLengkap, Alamat, Username, Email, Password) VALUES (?, ?, ?, ?, ?)`;
-        const values = [namaLengkap, alamat, username, email, hashedPassword];
-    
-        db.query(sql, values, (err, result) => {
+        const checkEmailSql = `SELECT * FROM user WHERE email = ?`;
+        db.query(checkEmailSql, [email], async (err, results) => {
             if (err) {
-                console.error('Failed to register user:', err);
-                return res.status(500).json({ message: 'Failed to register user.' });
+                console.error('Database error:', err);
+                return res.status(500).json({ message: 'Database error!' });
             }
-            res.status(201).json({ message: 'User successfully registered', UserID: result.insertId });
+
+            if (results.length > 0) {
+                return res.status(400).json({ message: 'Email already registered!' });
+            }
+
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+            const sql = `INSERT INTO user (NamaLengkap, Alamat, Username, Email, Password) VALUES (?, ?, ?, ?, ?)`;
+            const values = [namaLengkap, alamat, username, email, hashedPassword];
+
+            db.query(sql, values, (err, result) => {
+                if (err) {
+                    console.error('Failed to register user:', err);
+                    return res.status(500).json({ message: 'Failed to register user.' });
+                }
+                res.status(201).json({ message: 'User successfully registered', UserID: result.insertId });
+            });
         });
     } catch (error) {
         console.error('Error hashed password:', error);
@@ -193,20 +205,25 @@ app.get("/api/albums", verifyToken, (req, res) => {
             res.status(200).json(results);
         });
     } else {
-        // Mode lengkap: ambil album dengan daftar foto
+        // Mode lengkap: ambil album dengan daftar foto menggunakan GROUP_CONCAT
         const sql = `
-            SELECT a.AlbumID, a.NamaAlbum, 
-                COALESCE(JSON_ARRAYAGG(
+            SELECT 
+                a.AlbumID,
+                a.NamaAlbum,
+                a.Deskripsi,
+                u.Username,
+                COALESCE(GROUP_CONCAT(
                     JSON_OBJECT(
                         'FotoID', f.FotoID,
                         'JudulFoto', f.JudulFoto,
                         'LokasiFile', f.LokasiFile
                     )
-                ), '[]') AS photos
+                SEPARATOR ', '), '[]') AS photos
             FROM album a
+            JOIN user u ON a.UserID = u.UserID
             LEFT JOIN foto f ON a.AlbumID = f.AlbumID
             WHERE a.UserID = ?
-            GROUP BY a.AlbumID
+            GROUP BY a.AlbumID, a.Deskripsi, u.Username
         `;
 
         db.query(sql, [userID], (err, results) => {
@@ -214,13 +231,29 @@ app.get("/api/albums", verifyToken, (req, res) => {
                 console.error("Database fetch error:", err);
                 return res.status(500).json({ message: "Database fetch error!" });
             }
+
+            // Parsing string JSON agar menjadi array di backend
             res.status(200).json(results.map(album => ({
                 ...album,
-                photos: JSON.parse(album.photos) // Pastikan array photos dikembalikan sebagai objek
+                photos: album.photos !== '[]' ? JSON.parse(`[${album.photos}]`) : [] // Parsing JSON string menjadi array
             })));
         });
     }
 });
+
+app.get("/api/albums/:albumID/photos", (req, res) => {
+    const albumID = req.params.albumID;
+    const sql = 'SELECT FotoID, JudulFoto, LokasiFile FROM foto WHERE AlbumID = ?';
+
+    db.query(sql, [albumID], (err, results) => {
+        if (err) {
+            console.error("Database fetch error:", err);
+            return res.status(500).json({ message: "Database error!" });
+        }
+        res.json(results);
+    })
+})
+
 
 app.get("/api/photos", (req, res) => {
     const sql = "SELECT FotoID, JudulFoto, LokasiFile FROM foto";
@@ -234,7 +267,7 @@ app.get("/api/photos", (req, res) => {
     })
 });
 
-app.get("/api/photo/:fotoID", (req, res) => {
+app.get("/api/photos/:fotoID", (req, res) => {
     const { fotoID } = req.params;
     const sql = `
         SELECT f.FotoID, f.JudulFoto, f.DeskripsiFoto, f.TanggalUnggah, f.LokasiFile, u.UserID, u.Username
@@ -265,7 +298,7 @@ app.get("/api/photo/:fotoID", (req, res) => {
     })
 });
 
-app.post("/api/photo/:fotoID/like", verifyToken, async (req, res) => {
+app.post("/api/photos/:fotoID/like", verifyToken, async (req, res) => {
     try {
         const { fotoID } = req.params;
         const userID = req.user.id;
@@ -284,7 +317,7 @@ app.post("/api/photo/:fotoID/like", verifyToken, async (req, res) => {
     }
 });
 
-app.get("/api/photo/:fotoID/likes", verifyToken, async (req, res) => {
+app.get("/api/photos/:fotoID/likes-token", verifyToken, async (req, res) => {
     try {
         const { fotoID } = req.params;
         const userID = req.user.id;
@@ -300,7 +333,34 @@ app.get("/api/photo/:fotoID/likes", verifyToken, async (req, res) => {
     }
 });
 
-app.post("/api/photo/:fotoID/comment", verifyToken, async (req, res) => {
+app.get("/api/photos/:fotoID/likes-no-token", async (req, res) => {
+    try {
+        const { fotoID } = req.params;
+        const [result] = await db.promise().query("SELECT COUNT(*) AS likeCount FROM likefoto WHERE FotoID = ?", [fotoID]);
+        res.json({ likeCount: result[0].likeCount });
+    } catch (error) {
+        console.error("Error fetching likes:", error);
+        res.status(500).json({ success: false, message: "Server error!" });
+    }
+});
+
+app.get("/api/liked-photos", verifyToken, async (req, res) => {
+    try {
+        const userID = req.user.id;
+        const [likedPhotos] = await db.promise().query(
+            `SELECT f.FotoID, f.JudulFoto, f.LokasiFile, u.Username FROM likefoto l
+            JOIN foto f ON l.FotoID = f.FotoID 
+            JOIN user u ON l.UserID = u.UserID WHERE l.UserID = ?`, [userID]
+        );
+        
+        res.json({ success: true, likedPhotos })
+    } catch (error) {
+        console.error("Error fetching liked photos:", error);
+        res.status(500).json({ success: false, message: "Server error!" });
+    }
+});
+
+app.post("/api/photos/:fotoID/comment", verifyToken, async (req, res) => {
     try {
         const { fotoID } = req.params;
         const { isiKomentar } = req.body;
@@ -325,7 +385,7 @@ app.post("/api/photo/:fotoID/comment", verifyToken, async (req, res) => {
     }
 });
 
-app.get("/api/photo/:fotoID/comments", async (req, res) => {
+app.get("/api/photos/:fotoID/comments", async (req, res) => {
     try {
         const { fotoID } = req.params;
         

@@ -3,18 +3,23 @@ import { NavigationBar } from '../components/NavigationBar'
 import { AlbumCollage } from '../base-components/Images'
 import { ButtonNewAlbum } from '../base-components/Buttons'
 import { AddAlbumPopup } from '../components/AddAlbumPopup'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 
 export const AlbumsPage = () => {
   const [openAddAlbumPopup, setOpenAddAlbumPopup] = useState(false)
   const [albums, setAlbums] = useState([])
+  const navigate = useNavigate()
 
   const toggleAddAlbumPopup = () => {
     setOpenAddAlbumPopup((prev) => !prev)
   }
 
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate('/error')
+    }
     const fetchAlbum = async () => {
       try {
         const token = localStorage.getItem('token')
@@ -27,7 +32,7 @@ export const AlbumsPage = () => {
       }
     }
     fetchAlbum()
-  }, [])
+  }, [navigate])
 
   return (
     <>
@@ -35,12 +40,17 @@ export const AlbumsPage = () => {
         <NavigationBar />
       </div>
       {albums.length > 0 ? (
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 mt-20 m-4'>
-          {albums.map((album) => (
-            <AlbumCollage key={album.AlbumID} album={album} />
-          ))}
-          <ButtonNewAlbum onClick={toggleAddAlbumPopup} />
-          <AddAlbumPopup open={openAddAlbumPopup} onClose={() => setOpenAddAlbumPopup(false)} />
+        <div className='mt-20 m-4'>
+          <div className='mb-4 ml-2'>
+            <p className='text-xl text-center underline underline-offset-8'>Saved Albums by <span className='font-bold'>@{albums[0].Username}</span></p>
+          </div>
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3'>
+            {albums.map((album) => (
+              <AlbumCollage key={album.AlbumID} album={album} />
+            ))}
+            <ButtonNewAlbum onClick={toggleAddAlbumPopup} />
+            <AddAlbumPopup open={openAddAlbumPopup} onClose={() => setOpenAddAlbumPopup(false)} />
+          </div>
         </div>
       ) : (
         <div className='w-full h-screen flex flex-col justify-center items-center gap-5'>

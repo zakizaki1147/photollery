@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { NavigationBar } from '../components/NavigationBar'
 import { Image } from '../base-components/Images'
-import axios from 'axios'
 import { DetailPhotoPopup } from '../components/DetailPhotoPopup'
+import axios from 'axios'
 
 export const MainPage = () => {
   const [spans, setSpans] = useState({})
@@ -32,7 +32,6 @@ export const MainPage = () => {
     const img = event.target
     const imgHeight = img.naturalHeight
     const imgWidth = img.naturalWidth
-
     const rowSpan = Math.ceil((imgHeight / imgWidth * 10) / 10)
     setSpans(prev => ({ ...prev, [id]: rowSpan }))
   }
