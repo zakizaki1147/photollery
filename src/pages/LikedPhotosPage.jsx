@@ -31,6 +31,10 @@ export const LikedPhotosPage = () => {
     }
     fetchLikedPhotos()
   }, [navigate])
+
+  const handleUnlike = (fotoID) => {
+    setLikedPhotos((prev) => prev.filter((photo) => photo.FotoID !== fotoID))
+  }
   
   const toggleDetailPhotoPopup = (fotoID) => {
     setSelectedPhotoID(fotoID)
@@ -60,7 +64,7 @@ export const LikedPhotosPage = () => {
               <ArrayImage key={photo.FotoID} photo={photo} onImageLoad={onImageLoad} spans={spans} onClick={toggleDetailPhotoPopup} />
             ))}
             {openDetailPhotoPopup && (
-              <DetailPhotoPopup fotoID={selectedPhotoID} open={openDetailPhotoPopup} onClose={() => setOpenDetailPhotoPopup(false)} />
+              <DetailPhotoPopup fotoID={selectedPhotoID} open={openDetailPhotoPopup} onClose={() => setOpenDetailPhotoPopup(false)} onUnlike={handleUnlike} />
             )}
           </div>
         </div>

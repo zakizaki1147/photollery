@@ -6,7 +6,7 @@ import { CommentForm } from '../base-components/InputForms'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
-export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
+export const DetailPhotoPopup = ({ open, onClose, fotoID, onUnlike }) => {
   const [isVisible, setIsVisible] = useState(false)
   const [photoDetail, setPhotoDetail] = useState(null)
   const [isLiked, setIsLiked] = useState(false)
@@ -72,8 +72,13 @@ export const DetailPhotoPopup = ({ open, onClose, fotoID }) => {
       const token = localStorage.getItem("token")
       const response = await axios.post(`http://localhost:5000/api/photos/${photoDetail.fotoID}/like`, {}, { headers: { Authorization: `Bearer ${token}` } })
 
-      setIsLiked(response.data.liked)
-      setLikesCount((prev) => (response.data.liked ? prev + 1 : prev - 1))
+      const liked = response.data.liked
+      setIsLiked(liked)
+      setLikesCount((prev) => (liked ? prev + 1 : prev - 1))
+
+      if (!liked && onUnlike) {
+        onUnlike(photoDetail.fotoID)
+      }
     } catch (error) {
       console.error("Error liking photo:", error)
     }
