@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { NavigationBar } from '../components/NavigationBar'
-import { ImageUp } from 'lucide-react'
+import { Dropzone } from '../base-components/Dropzone'
 import { TextForm, Dropdown, TextArea } from '../base-components/InputForms'
 import { ButtonSecondary, ButtonSecondaryOutline } from '../base-components/Buttons'
 import { Link, useNavigate } from 'react-router-dom'
@@ -16,13 +16,15 @@ export const AddPhotoPage = () => {
   const navigate = useNavigate()
 
   useEffect (() => {
+    if (!localStorage.getItem("token")) {
+      navigate('/error')
+    }
     const fetchAlbums = async () => {
       try {
         const token = localStorage.getItem('token')
         const response = await axios.get('http://localhost:5000/api/albums?simple=true', {
           headers: { Authorization: `Bearer ${token}` }
         })
-
         const formattedAlbums = response.data.map((albumItem) => ({
           value: albumItem.AlbumID,
           label: albumItem.NamaAlbum,
@@ -33,14 +35,14 @@ export const AddPhotoPage = () => {
       }
     }
     fetchAlbums()
-  }, [])
+  }, [navigate])
 
   const handleDropdownChange = (e) => {
     setAlbum(e.target.value)
   }
 
-  const handleFileChange = (e) => {
-    setFoto(e.target.files[0])
+  const handleFileSelect = (file) => {
+    console.log("File selected:", file)
   }
 
   const handleUpload = async (e) => {
@@ -81,7 +83,7 @@ export const AddPhotoPage = () => {
       <div className='w-full h-screen flex justify-center items-center'>
         <form onSubmit={handleUpload} className='h-fit flex justify-center items-center gap-5 p-5 bg-gradient-to-tr from-secondary to-primary rounded-2xl'>
           <div className='w-80 h-fit flex flex-col gap-4'>
-            <div className='h-80 rounded-xl bg-white border-2 hover:border-4 hover:border-primary border-dashed flex justify-center items-center transition group'>
+            {/* <div className='w-80 h-80 rounded-xl bg-white border-2 hover:border-4 hover:border-primary border-dashed flex justify-center items-center transition group'>
               <label htmlFor="dropzone" className='w-full h-full hover:bg-primary/20 flex flex-col justify-center items-center gap-4 cursor-pointer'>
                 <div className='text-gray-400 group-hover:text-secondary rounded-lg p-1 mt-10 flex justify-center items-center transition'>
                   <ImageUp size={40} />
@@ -91,6 +93,9 @@ export const AddPhotoPage = () => {
                 </p>
               </label>
               <input type="file" id='dropzone' className='hidden' onChange={handleFileChange} />
+            </div> */}
+            <div>
+              <Dropzone onFileSelect={handleFileSelect} />
             </div>
             <div className='rounded-xl bg-white p-3'>
               <p className='font-medium mb-2 text-secondary'>Notes:</p>

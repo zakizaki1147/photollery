@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 21, 2025 at 03:00 AM
+-- Generation Time: Feb 26, 2025 at 02:01 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -29,11 +29,11 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `album` (
   `AlbumID` int NOT NULL,
-  `NamaAlbum` varchar(255) NOT NULL,
-  `Deskripsi` text NOT NULL,
+  `NamaAlbum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `Deskripsi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `TanggalDibuat` date NOT NULL,
   `UserID` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `album`
@@ -84,9 +84,9 @@ CREATE TABLE `komentarfoto` (
   `KomentarID` int NOT NULL,
   `FotoID` int NOT NULL,
   `UserID` int NOT NULL,
-  `IsiKomentar` text NOT NULL,
+  `IsiKomentar` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `TanggalKomentar` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `komentarfoto`
@@ -95,7 +95,8 @@ CREATE TABLE `komentarfoto` (
 INSERT INTO `komentarfoto` (`KomentarID`, `FotoID`, `UserID`, `IsiKomentar`, `TanggalKomentar`) VALUES
 (1, 1, 4, 'tes', '2025-02-21'),
 (2, 1, 2, 'widih ganteng banget', '2025-02-21'),
-(3, 1, 5, 'wow', '2025-02-21');
+(3, 1, 5, 'wow', '2025-02-21'),
+(4, 2, 4, 'miaw', '2025-02-26');
 
 -- --------------------------------------------------------
 
@@ -108,7 +109,7 @@ CREATE TABLE `likefoto` (
   `FotoID` int NOT NULL,
   `UserID` int NOT NULL,
   `TanggalLike` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `likefoto`
@@ -118,7 +119,8 @@ INSERT INTO `likefoto` (`LikeID`, `FotoID`, `UserID`, `TanggalLike`) VALUES
 (3, 5, 2, '2025-02-21'),
 (4, 5, 5, '2025-02-21'),
 (5, 5, 4, '2025-02-21'),
-(6, 1, 5, '2025-02-21');
+(6, 1, 5, '2025-02-21'),
+(8, 7, 4, '2025-02-23');
 
 -- --------------------------------------------------------
 
@@ -145,7 +147,8 @@ INSERT INTO `user` (`UserID`, `Username`, `Password`, `Email`, `NamaLengkap`, `A
 (3, 'rio', '$2b$10$gJN/sXe6VaZ5I5d4V9JuUOnK81xj84NalLXpiWrzPklBiV0PSdN/C', 'rio@gmail.com', 'Abah Rio', 'Jati Makmur'),
 (4, 'purwa', '$2b$10$XG/Ht.nSuvZGmLv1PFb7T.pBD2oFsDoV4RmrFUXHfhgDhnbM7Ndmy', 'purwa@gmail.com', 'Purwa Puter', 'Rawa Binong'),
 (5, 'azka', '$2b$10$gtLq//9EOW5yMqJ8.MlDl.IJAXQ88eXMHza.0GrpL/cxLwd1WhA5W', 'azka@gmail.com', 'Azka Akak', 'Condet'),
-(6, 'rafell', '$2b$10$/1JZXF3Ek5cJZZaXb5mKquA.ffcC1yJNVI/Fkuag7b76HZjandCVm', 'rafel@gmail.com', 'Rafelinow', 'Jati Makmur');
+(6, 'rafell', '$2b$10$/1JZXF3Ek5cJZZaXb5mKquA.ffcC1yJNVI/Fkuag7b76HZjandCVm', 'rafelino@gmail.com', 'Rafelinow', 'Jati Makmur'),
+(7, 'abdu', '$2b$10$uzM15REX18vDVPgK/Z/S1eDvfELPZ83AuqI5fKocLXvRZBTiOMF2G', 'abdu@gmail.com', 'Abdu Nawaf', 'Jati Murni');
 
 --
 -- Indexes for dumped tables
@@ -208,19 +211,19 @@ ALTER TABLE `foto`
 -- AUTO_INCREMENT for table `komentarfoto`
 --
 ALTER TABLE `komentarfoto`
-  MODIFY `KomentarID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `KomentarID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `likefoto`
 --
 ALTER TABLE `likefoto`
-  MODIFY `LikeID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `LikeID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `UserID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `UserID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables

@@ -109,7 +109,7 @@ const Dropdown = ({ children, id, options, value, onChange, error }) => {
 const CommentForm = ({ id, value, placeholder, onChange }) => {
   return (
     <>
-      <div className='flex focus-within:border-secondary border-white border-b-4 focus-within:bg-primary/20 focus-within:placeholder:text-gray-400'>
+      <div className='flex focus-within:border-secondary border-white border-b-4 focus-within:bg-primary/20 focus-within:placeholder:text-gray-400 transition'>
         <input 
           type="text" 
           className='w-full h-14 bg-transparent outline-none px-4 placeholder:text-sm transition'
@@ -119,7 +119,7 @@ const CommentForm = ({ id, value, placeholder, onChange }) => {
           value={value}
           onChange={onChange}
         />
-        <button type='submit' className={`px-4 transition ${value.trim() ? 'text-black' : 'text-gray-400'}`}>
+        <button type='submit' className={`px-4 transition ${value.trim() ? 'text-black' : 'text-gray-400 cursor-not-allowed'}`}>
           <SendHorizonal className={`${value.trim() ? 'fill-black' : 'fill-gray-400'}`} />
         </button>
       </div>

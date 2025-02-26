@@ -38,14 +38,14 @@ export const NavigationBar = () => {
           </Link>
           {user ? (
             <div className='flex justify-center items-center gap-2'>
-              <Link to='/addphoto'>
+              <Link to='/add-photo'>
                 <ButtonSecondary><Plus size={16} />Create</ButtonSecondary>
               </Link>
-              <Link to='/favorites'>
-                <ButtonSecondary><Heart size={16} />Favorites</ButtonSecondary>
+              <Link to='/liked-photos'>
+                <ButtonSecondary><Heart size={16} fill='white' />Liked</ButtonSecondary>
               </Link>
               <Link to='/albums'>
-                <ButtonSecondary><Bookmark size={16} />Albums</ButtonSecondary>
+                <ButtonSecondary><Bookmark size={16} fill='white' />Albums</ButtonSecondary>
               </Link>
               <p className='font-sans text-white select-none'>I</p>
               <ButtonSecondary onClick={toggleLogoutPopup}>Log Out</ButtonSecondary>
