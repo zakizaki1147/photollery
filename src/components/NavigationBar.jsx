@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ButtonSecondary } from '../base-components/Buttons'
-import { Heart, Bookmark, Plus } from 'lucide-react'
+import { Heart, Bookmark, Plus, LogOut, LogIn } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PhotolleryText from '../assets/photolleryText.png'
 import { LogoutPopup } from './LogoutPopup'
@@ -38,8 +38,8 @@ export const NavigationBar = () => {
           </Link>
           {user ? (
             <div className='flex justify-center items-center gap-2'>
-              <Link to='/add-photo'>
-                <ButtonSecondary><Plus size={16} />Create</ButtonSecondary>
+              <Link to='/upload-photo'>
+                <ButtonSecondary><Plus size={16} />Upload</ButtonSecondary>
               </Link>
               <Link to='/liked-photos'>
                 <ButtonSecondary><Heart size={16} fill='white' />Liked</ButtonSecondary>
@@ -48,17 +48,17 @@ export const NavigationBar = () => {
                 <ButtonSecondary><Bookmark size={16} fill='white' />Albums</ButtonSecondary>
               </Link>
               <p className='font-sans text-white select-none'>I</p>
-              <ButtonSecondary onClick={toggleLogoutPopup}>Log Out</ButtonSecondary>
+              <ButtonSecondary onClick={toggleLogoutPopup}><LogOut size={16} />Log Out</ButtonSecondary>
               <LogoutPopup open={openLogoutPopup} onClose={() => setOpenLogoutPopup(false)} />
             </div>
           ) : (
             <div className='flex justify-center items-center gap-2'>
               <Link to='/login'>
-                <ButtonSecondary>Log In</ButtonSecondary>
+                <ButtonSecondary><LogIn size={16} />Log In</ButtonSecondary>
               </Link>
               <p className='font-sans text-white select-none'>I</p>
               <Link to='/register'>
-                <ButtonSecondary>Sign Up</ButtonSecondary>
+                <ButtonSecondary><LogIn size={16} />Sign Up</ButtonSecondary>
               </Link>
             </div>
           )}

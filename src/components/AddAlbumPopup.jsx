@@ -3,12 +3,15 @@ import ReactDom from 'react-dom'
 import { useBodyOverflow } from '../custom-hooks/useBodyOverflow'
 import { TextArea, TextForm } from '../base-components/InputForms'
 import { ButtonSecondary, ButtonSecondaryOutline } from '../base-components/Buttons'
+import { DangerAlert, SuccessAlert } from '../base-components/Alerts'
 import axios from 'axios'
 
 export const AddAlbumPopup = ({ open, onClose }) => {
   const [namaAlbum, setNamaAlbum] = useState("")
   const [deskripsi, setDeskripsi] = useState("")
   const [errors, setErrors] = useState("")
+  const [successMessage, setSuccessMessage] = useState('')
+  const [dangerMessage, setDangerMessage] = useState('')
   const [isVisible, setIsVisible] = useState(false)
 
   useBodyOverflow(open)
@@ -16,11 +19,16 @@ export const AddAlbumPopup = ({ open, onClose }) => {
   useEffect(() => {
     if (open) {
       setIsVisible(true);
+      setDangerMessage('')
     } else {
       setTimeout(() => {
-      setIsVisible(false);
+        setIsVisible(false);
         onClose();
-      }, );
+        setNamaAlbum('')
+        setDeskripsi('')
+        setErrors('')
+        setDangerMessage('')
+      });
     }
     
   }, [open, onClose]);
@@ -45,22 +53,17 @@ export const AddAlbumPopup = ({ open, onClose }) => {
       return
     }
 
-    if (!token) {
-      alert("Unauthorized! Please login again!")
-      return
-    }
-
     try {
       const response = await axios.post(
         "http://localhost:5000/api/add_album",
         { namaAlbum, deskripsi },
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      alert(response.data.message)
-      onClose()
+      localStorage.setItem('successAddAlbum', 'Album added successfully!')
+      window.location.reload()
     } catch (error) {
       console.error("Error adding album:", error)
-      alert(error.response?.data?.message || "Failed to add album!")
+      setDangerMessage(error.response?.data?.message || "Failed to add album!")
     }
   }
   
@@ -105,6 +108,10 @@ export const AddAlbumPopup = ({ open, onClose }) => {
             </form>
           </div>
         </div>
+      </div>
+      <div className='fixed bottom-4 right-4 flex flex-col gap-1'>
+        {successMessage && <SuccessAlert message={successMessage} onClose={() => setSuccessMessage('')} />}
+        {dangerMessage && <DangerAlert message={dangerMessage} onClose={() => setDangerMessage('')} />}
       </div>
     </>,
     document.getElementById('portal')

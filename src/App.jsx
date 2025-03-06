@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom"
 import { MainPage } from "./pages/MainPage"
-import { AddPhotoPage } from "./pages/AddPhotoPage"
+import { UploadPhotoPage } from "./pages/UploadPhotoPage"
 import { AlbumsPage } from "./pages/AlbumsPage"
 import { LoginPage } from "./pages/LoginPage"
 import { RegisterPage } from "./pages/RegisterPage"
@@ -15,7 +15,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/" element={<MainPage />} />
-        <Route path="/add-photo" element={<AddPhotoPage />} />
+        <Route path="/upload-photo" element={<UploadPhotoPage />} />
         <Route path="/albums" element={<AlbumsPage />} />
         <Route path="/albums/:albumID" element={<DetailAlbumPage />} />
         <Route path="/liked-photos" element={<LikedPhotosPage />} />
