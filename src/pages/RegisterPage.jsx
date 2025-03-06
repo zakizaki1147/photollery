@@ -4,8 +4,13 @@ import { ButtonSecondary, ButtonSecondaryOutline } from '../base-components/Butt
 import { Link } from 'react-router-dom'
 import PhotolleryText from '../assets/photolleryText.png'
 import axios from 'axios'
+import { DangerAlert, SuccessAlert } from '../base-components/Alerts'
 
 export const RegisterPage = () => {
+  const [errors, setErrors] = useState({})
+  const [successMessage, setSuccessMessage] = useState('')
+  const [dangerMessage, setDangerMessage] = useState('')
+
   const [userData, setUserData] = useState({
     namaLengkap: '',
     alamat: '',
@@ -13,8 +18,6 @@ export const RegisterPage = () => {
     email: '',
     password: '',
   })
-
-  const [errors, setErrors] = useState({})
 
   const handleChange = (e) => {
     setUserData({ 
@@ -53,15 +56,17 @@ export const RegisterPage = () => {
           password: '',
       });
       setErrors({});
-      alert('User successfully registered!');
+      setSuccessMessage('User successfully registered! Please return to Log In page.');
+      setDangerMessage('')
     } catch (error) {
       console.error('Error encountered:', error.response?.data || error.message);
 
       if (error.response && error.response.status === 400 && error.response.data.message === 'Email already registered!') {
-        alert('Email is already registered. Please use a different email.');
+        setDangerMessage('Email is already registered. Please use a different email.');
       } else {
-        alert('Failed to register user.');
+        setDangerMessage('Failed to register user.');
       }
+      setSuccessMessage('')
     }
   };
 
@@ -137,6 +142,10 @@ export const RegisterPage = () => {
             </div>
           </form>
         </div>
+      </div>
+      <div className='fixed bottom-4 right-4 flex flex-col gap-1'>
+        {successMessage && <SuccessAlert message={successMessage} onClose={() => setSuccessMessage('')} />}
+        {dangerMessage && <DangerAlert message={dangerMessage} onClose={() => setDangerMessage('')} />}
       </div>
     </>
   )

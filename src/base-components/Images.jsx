@@ -32,13 +32,14 @@ const Image = ({ onImageLoad, spans, photos, onClick }) => {
 }
 
 const AlbumCollage = ({ album }) => {
-  const photos = album.photos || [];
+  const photos = album.photos && album.photos.length > 0 && album.photos[0].FotoID !== null ? album.photos : [];
+  const albumLink = photos.length > 0 ? `/albums/${album.AlbumID}` : '/'
 
   return (
     <>
-      <Link to={`/albums/${album.AlbumID}`}>
+      <Link to={albumLink}>
         <div className="w-full h-60 relative group rounded-xl overflow-hidden bg-gradient-to-tr from-secondary to-primary flex gap-0.5 border-2 border-primary cursor-pointer">
-          <div className="w-2/3 h-full">
+          <div className="w-2/3 h-full bg-white">
             {photos[0] ? (
               <img
                 src={`http://localhost:5000${photos[0].LokasiFile}`}
@@ -47,7 +48,7 @@ const AlbumCollage = ({ album }) => {
               />
             ) : (
               <div className='w-full h-full flex justify-center items-center'>
-                <p className='text-xs text-gray-400 text-center'>No image available :(</p>
+                <p className='text-xs text-gray-400 text-center'>No photo available :(</p>
               </div>
             )}
           </div>
@@ -61,7 +62,7 @@ const AlbumCollage = ({ album }) => {
                 />
               ) : (
                 <div className='w-full h-full flex justify-center items-center'>
-                  <p className='text-xs text-gray-400 text-center'>No image available :(</p>
+                  <p className='text-xs text-gray-400 text-center'>No photo available :(</p>
                 </div>
               )}
             </div>
@@ -74,14 +75,14 @@ const AlbumCollage = ({ album }) => {
                 />
               ) : (
                 <div className='w-full h-full flex justify-center items-center'>
-                  <p className='text-xs text-gray-400 text-center'>No image available :(</p>
+                  <p className='text-xs text-gray-400 text-center'>No photo available :(</p>
                 </div>
               )}
             </div>
           </div>
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300 cursor-pointer"></div>
-          <div className="absolute bottom-0 bg-gradient-to-t from-primary w-full h-16 flex justify-between items-center px-5 opacity-0 group-hover:opacity-100 duration-300 cursor-pointer">
-            <p className='font-bold mt-5'>{album.NamaAlbum}</p>
+          <div className="absolute bottom-0 bg-gradient-to-t from-black/50 w-full h-16 flex justify-between items-center px-5 opacity-0 group-hover:opacity-100 duration-300 cursor-pointer">
+            <p className='font-medium mt-5 text-secondary'>{album.NamaAlbum}</p>
             <div className="p-1.5 bg-black/50 hover:bg-black/80 text-primary rounded-full transition">
               <ChevronRight size={27} />
             </div>

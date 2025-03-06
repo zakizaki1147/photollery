@@ -95,8 +95,8 @@ const Dropdown = ({ children, id, options, value, onChange, error }) => {
         onChange={onChange}
         className={`w-full h-10 border-b-2 outline-none rounded-t focus:border-secondary focus:border-b-4 focus:bg-primary/20 focus:placeholder:text-gray-400 placeholder:text-sm transition
           ${error ? 'border-red-500 placeholder:text-red-500 bg-red-100' : 'border-primary'}
-          ${value ? 'text-base text-black' : 'text-sm text-gray-400'}
         `}
+        /* ${value ? 'text-base text-black' : 'text-sm text-gray-400'} */
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>{option.label}</option>
@@ -119,8 +119,8 @@ const CommentForm = ({ id, value, placeholder, onChange }) => {
           value={value}
           onChange={onChange}
         />
-        <button type='submit' className={`px-4 transition ${value.trim() ? 'text-black' : 'text-gray-400 cursor-not-allowed'}`}>
-          <SendHorizonal className={`${value.trim() ? 'fill-black' : 'fill-gray-400'}`} />
+        <button type='submit' className={`px-4 transition group ${value.trim() ? 'text-black hover:text-primary' : 'text-gray-400 cursor-not-allowed'}`}>
+          <SendHorizonal className={`${value.trim() ? 'fill-black group-hover:fill-primary' : 'fill-gray-400'}`} />
         </button>
       </div>
     </>

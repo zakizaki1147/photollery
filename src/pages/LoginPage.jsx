@@ -1,14 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { TextForm, PasswordForm } from '../base-components/InputForms'
 import { ButtonSecondary } from '../base-components/Buttons'
 import { Link, useNavigate } from 'react-router-dom'
 import PhotolleryText from '../assets/photolleryText.png'
+import { DangerAlert, SuccessAlert } from '../base-components/Alerts'
+import axios from 'axios'
 
 export const LoginPage = () => {
   const [userData, setUserData] = useState({ username: '', password: '' })
   const [errors, setErrors] = useState({})
-  const [message, setMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [dangerMessage, setDangerMessage] = useState('')
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const successLogoutMessage = localStorage.getItem('successLogout')
+    if (successLogoutMessage) {
+      setSuccessMessage(successLogoutMessage)
+      localStorage.removeItem('successLogout')
+    }
+  }, [])
 
   const handleChange = (e) => {
     setUserData({
@@ -38,27 +49,25 @@ export const LoginPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
+      const response = await axios.post('http://localhost:5000/api/login', userData, {
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
       })
 
-      const result = await response.json()
-      console.log('Login response:', result)
-
-      if (response.ok) {
-        localStorage.setItem('token', result.token)
-        navigate('/')
-      } else {
-        alert("Invalid username or password!")
-        setMessage(result.message)
-      }
+      console.log("Login response:", response.data)
+  
+      localStorage.setItem("token", response.data.token)
+      localStorage.setItem("successLogin", "Log in success! Welcome to Photollery!")
+      navigate("/");
     } catch (err) {
-      console.error('Login error:', err)
-      setMessage('Failed to connect to server!')
+      console.error("Login error:", err)
+  
+      if (err.response && err.response.status === 401) {
+        setDangerMessage("Invalid username or password!")
+      } else {
+        setDangerMessage("Failed to connect to server!")
+      }
     }
-  }
+  };
 
   return (
     <>
@@ -101,6 +110,10 @@ export const LoginPage = () => {
             </p>
           </form>
         </div>
+      </div>
+      <div className='fixed bottom-4 right-4 flex flex-col gap-1'>
+        {successMessage && <SuccessAlert message={successMessage} onClose={() => setSuccessMessage('')} />}
+        {dangerMessage && <DangerAlert message={dangerMessage} onClose={() => setDangerMessage('')} />}
       </div>
     </>
   )

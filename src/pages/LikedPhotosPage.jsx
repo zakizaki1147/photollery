@@ -55,9 +55,9 @@ export const LikedPhotosPage = () => {
         <NavigationBar />
       </div>
       {likedPhotos.length > 0 ? (
-        <div className='mt-20 m-4'>
-          <div className='mb-4 ml-2'>
-            <p className='text-xl text-center underline underline-offset-8'>Liked Photos by <span className='font-bold'>@{likedPhotos[0].Username}</span></p>
+        <div className='mt-[5.5rem] m-4'>
+          <div className='mb-7'>
+            <p className='text-xl text-center text-secondary font-medium underline underline-offset-8'>Liked Photos by <span className='font-bold'>@{likedPhotos[0].Username}</span></p>
           </div>
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3'>
             {likedPhotos.map(photo => (

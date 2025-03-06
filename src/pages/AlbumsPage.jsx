@@ -3,6 +3,7 @@ import { NavigationBar } from '../components/NavigationBar'
 import { AlbumCollage } from '../base-components/Images'
 import { ButtonNewAlbum } from '../base-components/Buttons'
 import { AddAlbumPopup } from '../components/AddAlbumPopup'
+import { DangerAlert, SuccessAlert } from '../base-components/Alerts'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
@@ -10,6 +11,8 @@ import axios from 'axios'
 export const AlbumsPage = () => {
   const [openAddAlbumPopup, setOpenAddAlbumPopup] = useState(false)
   const [albums, setAlbums] = useState([])
+  const [successMessage, setSuccessMessage] = useState('')
+  const [dangerMessage, setDangerMessage] = useState('')
   const navigate = useNavigate()
 
   const toggleAddAlbumPopup = () => {
@@ -19,6 +22,11 @@ export const AlbumsPage = () => {
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate('/error')
+    }
+    const successAddAlbumMessage = localStorage.getItem('successAddAlbum')
+    if (successAddAlbumMessage) {
+      setSuccessMessage(successAddAlbumMessage)
+      localStorage.removeItem('successAddAlbum')
     }
     const fetchAlbum = async () => {
       try {
@@ -40,9 +48,9 @@ export const AlbumsPage = () => {
         <NavigationBar />
       </div>
       {albums.length > 0 ? (
-        <div className='mt-20 m-4'>
-          <div className='mb-4 ml-2'>
-            <p className='text-xl text-center underline underline-offset-8'>Saved Albums by <span className='font-bold'>@{albums[0].Username}</span></p>
+        <div className='mt-[5.5rem] m-4'>
+          <div className='mb-7'>
+            <p className='text-xl text-center text-secondary font-medium underline underline-offset-8'>Saved Albums by <span className='font-bold'>@{albums[0].Username}</span></p>
           </div>
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3'>
             {albums.map((album) => (
@@ -59,6 +67,10 @@ export const AlbumsPage = () => {
           <AddAlbumPopup open={openAddAlbumPopup} onClose={() => setOpenAddAlbumPopup(false)} />
         </div>
       )}
+      <div className='fixed bottom-4 right-4 flex flex-col gap-1'>
+        {successMessage && <SuccessAlert message={successMessage} onClose={() => setSuccessMessage('')} />}
+        {dangerMessage && <DangerAlert message={dangerMessage} onClose={() => setDangerMessage('')} />}
+      </div>
     </>
   )
 }

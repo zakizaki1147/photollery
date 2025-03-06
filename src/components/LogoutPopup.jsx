@@ -34,6 +34,7 @@ export const LogoutPopup = ({ open, onClose }) => {
   const handleLogout = (e) => {
     e.preventDefault()
     localStorage.removeItem('token')
+    localStorage.setItem('successLogout', 'Log out success! See you again.')
     navigate('/login', { replace: true })
   }
   
